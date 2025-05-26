@@ -15,14 +15,14 @@ public class CamaraController : MonoBehaviour
 
     private float yaw;
     private float pitch;
-    //private PlayerController playerController;
+    private CharacterMove playerController;
     private Transform mainCameraTransform;
     void Start()
     {
         if (player != null)
         {
-            //playerController = player.GetComponent<>();
-            //if (playerController == null)
+            playerController = player.GetComponent<CharacterMove>();
+            if (playerController == null)
             {
                 Debug.Log("PlayerController no encontrado", this);
             }
@@ -61,13 +61,13 @@ public class CamaraController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        //if (playerController != null && playerController.IsMoving)
+        if (playerController != null && playerController.isMoving)
         {
-            //yaw = playerController.CurrentYaw;
+            yaw = playerController.CurrentYaw;
         }
-        //else {
-        //yaw *= mouseX * rotationSpeed;
-        //}
+        else {
+        yaw *= mouseX * rotationSpeed;
+        }
 
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
