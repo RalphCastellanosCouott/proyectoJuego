@@ -22,10 +22,13 @@ public class CharacterMove : MonoBehaviour
     private float yaw;
     public bool isMoving { get; private set; }
     public float CurrentYaw => yaw;
+    private Vector3 externalVelocity = Vector3.zero;
+    private KiwiManager kiwiManager;
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
+        kiwiManager = FindObjectOfType<KiwiManager>();
     }
 
     void Update()
@@ -70,6 +73,22 @@ public class CharacterMove : MonoBehaviour
         if (isMoving)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0f, yaw, 0f), rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    public void SetExternalVelocity(Vector3 platformVelocity)
+    {
+        externalVelocity = platformVelocity;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Kiwi")) // Asegúrate de asignar este tag a todos los kiwis visibles
+        {
+            if (kiwiManager != null)
+            {
+                kiwiManager.CollectKiwi(other.gameObject);
+            }
         }
     }
 }
