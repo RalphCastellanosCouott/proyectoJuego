@@ -8,40 +8,39 @@ public class PlataformaControl : MonoBehaviour
     public KeyCode tecla = KeyCode.E;
     private bool estaArriba = false;
     private bool jugadorEncima = false;
+    private bool moverPlataforma = false;
     private Vector3 posicionInicial;
     private Vector3 posicionFinal;
+    private Vector3 destino;
     private Transform jugadorTransform;
     void Start()
     {
         posicionInicial = plataforma.position;
         posicionFinal = posicionInicial + Vector3.up * altura;
+        destino = posicionInicial;
     }
 
     void Update()
     {
         if (jugadorEncima && Input.GetKeyDown(tecla))
         {
-            StopAllCoroutines();
-            StartCoroutine(MoverPlataforma());
+            destino = estaArriba ? posicionInicial : posicionFinal;
+            moverPlataforma = true;
+            estaArriba = !estaArriba;
         }
     }
 
-    System.Collections.IEnumerator MoverPlataforma()
+    void FixedUpdate()
     {
-        Vector3 destino = estaArriba ? posicionInicial : posicionFinal;
-        if (jugadorTransform != null)
-            jugadorTransform.SetParent(plataforma);
-
-        while (Vector3.Distance(plataforma.position, destino) > 0.01f)
+        if (moverPlataforma)
         {
             plataforma.position = Vector3.MoveTowards(plataforma.position, destino, velocidad * Time.deltaTime);
-            yield return null;
+            if (Vector3.Distance(plataforma.position, destino) < 0.01f)
+            {
+                plataforma.position = destino;
+                moverPlataforma = false;
+            }
         }
-        plataforma.position = destino;
-        estaArriba = !estaArriba;
-
-        if (jugadorTransform != null)
-            jugadorTransform.SetParent(null);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -50,6 +49,7 @@ public class PlataformaControl : MonoBehaviour
         {
             jugadorEncima = true;
             jugadorTransform = other.transform;
+            jugadorTransform.SetParent(plataforma);
         }
     }
 
@@ -58,11 +58,8 @@ public class PlataformaControl : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             jugadorEncima = false;
-            if (jugadorTransform != null)
-            {
-                jugadorTransform.SetParent(null);
-                jugadorTransform = null;
-            }
+            jugadorTransform.SetParent(null);
+            jugadorTransform = null;
         }
     }
 }

@@ -15,6 +15,7 @@ public class CharacterMove : MonoBehaviour
     [Header("References")]
     public Transform cameraTransform;
     private CharacterController controller;
+    private PlayerSwing swing;
 
     private Vector3 velocity;
     private float currentSpeed;
@@ -27,12 +28,14 @@ public class CharacterMove : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        swing = GetComponent<PlayerSwing>();
         Cursor.lockState = CursorLockMode.Locked;
         kiwiManager = FindObjectOfType<KiwiManager>();
     }
 
     void Update()
     {
+        if (swing != null && swing.IsSwinging) return;
         HandleMovement();
         HandleRotation();
     }

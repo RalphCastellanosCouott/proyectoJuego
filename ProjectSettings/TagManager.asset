@@ -8,6 +8,7 @@ TagManager:
   - Collectible
   - MovingPlatform
   - Kiwi
+  - Liana
   layers:
   - Default
   - TransparentFX
