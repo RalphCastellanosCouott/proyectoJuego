@@ -9,6 +9,8 @@ TagManager:
   - MovingPlatform
   - Kiwi
   - Liana
+  - Ground
+  - Estalactita
   layers:
   - Default
   - TransparentFX

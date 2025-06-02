@@ -19,7 +19,6 @@ public class LifeSystem : MonoBehaviour
         }
     }
 
-
     void Update()
     {
         UpdateLivesUI();
@@ -43,13 +42,30 @@ public class LifeSystem : MonoBehaviour
             {
                 Application.Quit();
 
-                #if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-                #endif
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
             }
             else
             {
                 transform.position = respawnPoint.position;
+            }
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Estalactita"))
+        {
+            currentLives--;
+            Debug.Log("Vidas restantes: " + currentLives);
+            if (currentLives == 0)
+            {
+                Application.Quit();
+
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
             }
         }
     }

@@ -19,34 +19,9 @@ public class CamaraController : MonoBehaviour
     private Transform mainCameraTransform;
     void Start()
     {
-        if (player != null)
-        {
-            playerController = player.GetComponent<CharacterMove>();
-            if (playerController == null)
-            {
-                Debug.Log("PlayerController no encontrado", this);
-            }
-        }
-        else
-        {
-            Debug.Log("El campo 'player' en CameraController", this);
-        }
-
-        if (Camera.main != null)
-        {
-            mainCameraTransform = Camera.main.transform;
-            if (mainCameraTransform != this.transform)
-            {
-                Debug.LogWarning("");
-            }
-        }
-        else
-        {
-            Debug.LogError("");
-        }
-
+        playerController = player.GetComponent<CharacterMove>();
+        mainCameraTransform = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     private void LateUpdate()
@@ -61,12 +36,13 @@ public class CamaraController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        if (playerController != null && playerController.IsMoving)
+        if (playerController.IsMoving)
         {
             yaw = playerController.CurrentYaw;
         }
-        else {
-        yaw += mouseX * rotationSpeed;
+        else
+        {
+            yaw += mouseX * rotationSpeed;
         }
 
         pitch -= mouseY;
@@ -75,20 +51,9 @@ public class CamaraController : MonoBehaviour
 
     void UpdateCameraPosition()
     {
-        if (cameraTarget == null)
-        {
-            Debug.LogError("", this);
-            return;
-        }
-        if (mainCameraTransform == null)
-        {
-            Debug.LogError("");
-            return;
-        }
-
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
         Vector3 targetPosition = cameraTarget.position + rotation * shoulderOffice;
         mainCameraTransform.position = Vector3.Lerp(mainCameraTransform.position, targetPosition, followSpeed * Time.deltaTime);
-        mainCameraTransform.LookAt(cameraTarget.position);
+        mainCameraTransform.LookAt(cameraTarget);
     }
 }

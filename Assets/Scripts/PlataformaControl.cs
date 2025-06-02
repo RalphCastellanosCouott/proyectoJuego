@@ -6,8 +6,11 @@ public class PlataformaControl : MonoBehaviour
     public float altura = 3f;
     public float velocidad = 2f;
     public KeyCode tecla = KeyCode.E;
+    public Collider zonaBotonTrigger;
     private bool estaArriba = false;
     private bool jugadorEncima = false;
+    public bool jugadorEnZonaBoton = false;
+    public bool forzarBajada = false;
     private bool moverPlataforma = false;
     private Vector3 posicionInicial;
     private Vector3 posicionFinal;
@@ -22,11 +25,19 @@ public class PlataformaControl : MonoBehaviour
 
     void Update()
     {
-        if (jugadorEncima && Input.GetKeyDown(tecla))
+        if (!moverPlataforma && jugadorEncima && jugadorEnZonaBoton && Input.GetKeyDown(tecla))
         {
             destino = estaArriba ? posicionInicial : posicionFinal;
             moverPlataforma = true;
             estaArriba = !estaArriba;
+        }
+
+        if (!moverPlataforma && forzarBajada && estaArriba)
+        {
+            destino = posicionInicial;
+            moverPlataforma = true;
+            estaArriba = false;
+            forzarBajada = false;
         }
     }
 
@@ -47,6 +58,7 @@ public class PlataformaControl : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Jugador entró en la zona de la plataforma");
             jugadorEncima = true;
             jugadorTransform = other.transform;
             jugadorTransform.SetParent(plataforma);
@@ -57,7 +69,9 @@ public class PlataformaControl : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Jugador salió de la zona de la plataforma");
             jugadorEncima = false;
+            jugadorEnZonaBoton = false;
             if (jugadorTransform != null)
             {
                 jugadorTransform.SetParent(null);
