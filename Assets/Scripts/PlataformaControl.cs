@@ -58,8 +58,11 @@ public class PlataformaControl : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             jugadorEncima = false;
-            jugadorTransform.SetParent(null);
-            jugadorTransform = null;
+            if (jugadorTransform != null)
+            {
+                jugadorTransform.SetParent(null);
+                jugadorTransform = null;
+            }
         }
     }
 }

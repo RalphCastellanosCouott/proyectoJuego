@@ -14,58 +14,65 @@ public class CharacterMove : MonoBehaviour
 
     [Header("References")]
     public Transform cameraTransform;
+    public Animator animator;
     private CharacterController controller;
-    private PlayerSwing swing;
-
     private Vector3 velocity;
     private float currentSpeed;
-    private bool isGrounded;
     private float yaw;
-    public bool isMoving { get; private set; }
-    public float CurrentYaw => yaw;
     private Vector3 externalVelocity = Vector3.zero;
-    private KiwiManager kiwiManager;
+    public bool IsMoving { get; private set; }
+    public Vector2 CurrentInput { get; private set; }
+    public bool IsGrounded { get; private set; }
+    public float CurrentYaw => yaw;
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        swing = GetComponent<PlayerSwing>();
         Cursor.lockState = CursorLockMode.Locked;
-        kiwiManager = FindObjectOfType<KiwiManager>();
     }
 
     void Update()
     {
-        if (swing != null && swing.IsSwinging) return;
         HandleMovement();
         HandleRotation();
+        updateAnimator();
     }
 
     void HandleMovement()
     {
-        isGrounded = controller.isGrounded;
-        if (isGrounded && velocity.y < 0)
+        IsGrounded = controller.isGrounded;
+
+        if (IsGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            if (externalVelocity.y > -0.05f && externalVelocity.y < 0.05f) velocity.y = 0;
+            else velocity.y = -2f;
         }
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         Vector3 inputDirection = new Vector3(horizontal, 0f, vertical).normalized;
-        isMoving = inputDirection.magnitude > 0.1f;
+        IsMoving = inputDirection.magnitude > 0.1f;
+        Vector3 moveDirection = Vector3.zero;
 
-        if (isMoving)
+        if (IsMoving)
         {
-            Vector3 moveDirection = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f) * inputDirection;
+            moveDirection = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f) * inputDirection;
             bool isSprinting = Input.GetKey(KeyCode.LeftShift);
             currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
-
-            controller.Move(moveDirection * currentSpeed * Time.deltaTime);
         }
-        if (Input.GetButtonDown("Jump") && isGrounded)
+
+        if (Input.GetButtonDown("Jump"))
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            animator?.SetBool("IsJumping", true);
         }
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        Vector3 finalMovement = (moveDirection * currentSpeed + externalVelocity) * Time.deltaTime;
+        finalMovement.y += velocity.y * Time.deltaTime;
+        controller.Move(finalMovement);
+
+        if (IsGrounded && velocity.y < 0.1f)
+        {
+            animator?.SetBool("IsJumping", false);
+        }
     }
 
     void HandleRotation()
@@ -73,25 +80,22 @@ public class CharacterMove : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         yaw += mouseX;
 
-        if (isMoving)
+        if (IsMoving)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0f, yaw, 0f), rotationSpeed * Time.deltaTime);
         }
     }
 
+    void updateAnimator()
+    {
+        float SpeedPercent = IsMoving ? (currentSpeed == sprintSpeed ? 1f : 0.5f) : 0f;
+        animator?.SetFloat("Speed", SpeedPercent, 0.1f, Time.deltaTime);
+        animator?.SetBool("IsGrounded", IsGrounded);
+        animator?.SetFloat("VerticalSpeed", velocity.y);
+    }
+
     public void SetExternalVelocity(Vector3 platformVelocity)
     {
         externalVelocity = platformVelocity;
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Kiwi")) // Asegúrate de asignar este tag a todos los kiwis visibles
-        {
-            if (kiwiManager != null)
-            {
-                kiwiManager.CollectKiwi(other.gameObject);
-            }
-        }
     }
 }

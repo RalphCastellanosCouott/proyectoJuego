@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class MovingPlatform : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class MovingPlatform : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Vector3 minPoint = new Vector3(transform.position.x, transform.position.y + minHeight, transform.position.z);
-        Vector3 maxPoint = new Vector3(transform.position.x, transform.position.y + minHeight, transform.position.z);
+        Vector3 maxPoint = new Vector3(transform.position.x, transform.position.y + maxHeight, transform.position.z);
         Gizmos.DrawLine(minPoint, maxPoint);
         Gizmos.DrawWireSphere(minPoint, 0.2f);
         Gizmos.DrawWireSphere(maxPoint, 0.2f);

@@ -61,12 +61,12 @@ public class CamaraController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        if (playerController != null && playerController.isMoving)
+        if (playerController != null && playerController.IsMoving)
         {
             yaw = playerController.CurrentYaw;
         }
         else {
-        yaw *= mouseX * rotationSpeed;
+        yaw += mouseX * rotationSpeed;
         }
 
         pitch -= mouseY;

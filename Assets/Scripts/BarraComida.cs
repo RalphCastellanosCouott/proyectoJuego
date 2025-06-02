@@ -9,10 +9,12 @@ public class BarraComida : MonoBehaviour
 
     public int comidaActual = 8;
     public float tiempoEntreBajadas = 2f;
+
+    private Coroutine corutinaVaciar;
     void Start()
     {
         CambiarComida(comidaActual);
-        StartCoroutine(VaciarComidaTiempo());
+        corutinaVaciar = StartCoroutine(VaciarComidaTiempo());
     }
 
     public void CambiarComida(int nuevaCantidad)
@@ -25,9 +27,9 @@ public class BarraComida : MonoBehaviour
             Debug.Log("Sin comida. Cerrando el juego...");
             Application.Quit();
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-    #endif
+#endif
         }
     }
 
@@ -43,5 +45,15 @@ public class BarraComida : MonoBehaviour
     public void RecuperarComida(int cantidad)
     {
         CambiarComida(comidaActual + cantidad);
+        ReiniciarTemporizador();
+    }
+
+    public void ReiniciarTemporizador()
+    {
+        if (corutinaVaciar != null)
+        {
+            StopCoroutine(corutinaVaciar);
+        }
+        corutinaVaciar = StartCoroutine(VaciarComidaTiempo());
     }
 }
