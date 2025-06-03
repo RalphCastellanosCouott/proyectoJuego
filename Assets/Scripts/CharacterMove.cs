@@ -59,7 +59,7 @@ public class CharacterMove : MonoBehaviour
             currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (IsGrounded && Input.GetButtonDown("Jump"))
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             animator?.SetBool("IsJumping", true);

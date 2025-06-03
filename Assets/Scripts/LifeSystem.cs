@@ -36,17 +36,8 @@ public class LifeSystem : MonoBehaviour
     {
         if (other.CompareTag("DeadZone"))
         {
-            currentLives--;
-            Debug.Log("Vidas restantes: " + currentLives);
-            if (currentLives == 0)
-            {
-                Application.Quit();
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            }
-            else
+            PerderVida();
+            if (currentLives > 0)
             {
                 transform.position = respawnPoint.position;
             }
@@ -57,16 +48,22 @@ public class LifeSystem : MonoBehaviour
     {
         if (collision.collider.CompareTag("Estalactita"))
         {
-            currentLives--;
-            Debug.Log("Vidas restantes: " + currentLives);
-            if (currentLives == 0)
-            {
-                Application.Quit();
+            PerderVida();
+        }
+    }
 
+    public void PerderVida()
+    {
+        currentLives--;
+        UpdateLivesUI();
+        Debug.Log("Vidas restantes: " + currentLives);
+
+        if (currentLives == 0)
+        {
+            Application.Quit();
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
 #endif
-            }
         }
     }
 }

@@ -23,6 +23,13 @@ public class Estalactita : MonoBehaviour
             StartCoroutine(ResetWithCooldown());
         }
     }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DeadZone"))
+        {
+            StartCoroutine(ResetWithCooldown());
+        }
+    }
 
     IEnumerator ResetWithCooldown()
     {

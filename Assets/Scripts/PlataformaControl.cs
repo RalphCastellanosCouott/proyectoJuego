@@ -54,6 +54,16 @@ public class PlataformaControl : MonoBehaviour
         }
     }
 
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Vector3 minPoint = new Vector3(transform.position.x, transform.position.y + altura, transform.position.z);
+        Vector3 maxPoint = new Vector3(transform.position.x, transform.position.y + 0, transform.position.z);
+        Gizmos.DrawLine(minPoint, maxPoint);
+        Gizmos.DrawWireSphere(minPoint, 0.2f);
+        Gizmos.DrawWireSphere(maxPoint, 0.2f);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
